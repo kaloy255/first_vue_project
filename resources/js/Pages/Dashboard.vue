@@ -1,0 +1,107 @@
+<script setup>
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { Head } from "@inertiajs/vue3";
+import { router } from "@inertiajs/vue3";
+
+defineProps({
+    myTasks: Object,
+});
+
+function startTask(taskId) {
+    router.patch(route("tasks.start", taskId));
+}
+
+function checkTask(taskId) {
+    router.patch(route("tasks.check", taskId));
+}
+</script>
+
+<template>
+    <Head title="Dashboard" />
+
+    <AuthenticatedLayout>
+        <template #header>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Dashboard
+            </h2>
+        </template>
+
+        <div class="p-12">
+            <table class="min-w-full bg-white border border-gray-200 mt-8">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border-b">Name</th>
+                        <th class="px-4 py-2 border-b">Description</th>
+                        <th class="px-4 py-2 border-b">Created By</th>
+                        <th class="px-4 py-2 border-b">Status</th>
+                        <th class="px-4 py-2 border-b">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-if="myTasks.length === 0">
+                        <td colspan="5" class="text-center py-4 text-gray-500">
+                            No tasks available.
+                        </td>
+                    </tr>
+                    <tr
+                        v-for="task in myTasks"
+                        :key="task.id"
+                        class="text-center"
+                    >
+                        <td class="px-4 py-2 border-b">{{ task.name }}</td>
+                        <td class="px-4 py-2 border-b">
+                            {{ task.description }}
+                        </td>
+                        <td class="px-4 py-2 border-b">
+                            {{ task.creator?.name || "N/A" }}
+                        </td>
+                        <td class="px-4 py-2 border-b">
+                            <span
+                                :class="{
+                                    'text-green-600':
+                                        task.status === 'completed',
+                                    'text-yellow-600':
+                                        task.status === 'pending',
+                                    'text-blue-600':
+                                        task.status === 'inprogress',
+                                    'text-gray-600': task.status === 'checking',
+                                    'text-red-600': task.status === 'failed',
+                                }"
+                            >
+                                {{
+                                    task.status === "checking"
+                                        ? "Checking..."
+                                        : task.status.charAt(0).toUpperCase() +
+                                          task.status.slice(1)
+                                }}
+                            </span>
+                        </td>
+
+                        <td class="px-4 py-2 border-b">
+                            <button
+                                v-if="task.status === 'pending'"
+                                @click="startTask(task.id)"
+                                class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                                Start
+                            </button>
+                            <button
+                                v-else-if="task.status === 'inprogress'"
+                                @click="checkTask(task.id)"
+                                class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600"
+                            >
+                                Check
+                            </button>
+                            <span
+                                v-else-if="task.status === 'checking'"
+                                class="text-gray-600"
+                                >checking</span
+                            >
+                            <span v-else="task.status === 'completed'"></span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </AuthenticatedLayout>
+</template>
