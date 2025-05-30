@@ -27,7 +27,6 @@ class EmployeeController extends Controller
     public function checkTask(Tasks $task)
     {
        
-        // Optional: Check if the authenticated user is assigned to this task
         if ($task->assign_to !== auth()->id()) {
             abort(403);
         }
