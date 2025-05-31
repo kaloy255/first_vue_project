@@ -2,7 +2,8 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
-
+import { usePage } from "@inertiajs/vue3";
+const page = usePage();
 defineProps({
     myTasks: Object,
 });
@@ -13,6 +14,25 @@ function startTask(taskId) {
 
 function checkTask(taskId) {
     router.patch(route("tasks.check", taskId));
+}
+const filters = page.props.filters;
+function toggleSort(column) {
+    const currentSort = filters.sort;
+    const currentDirection = filters.direction;
+    const newDirection =
+        currentSort === column && currentDirection === "asc" ? "desc" : "asc";
+
+    router.get(
+        route("dashboard"),
+        {
+            sort: column,
+            direction: newDirection,
+        },
+        {
+            preserveScroll: true,
+            replace: true,
+        }
+    );
 }
 </script>
 
@@ -30,9 +50,47 @@ function checkTask(taskId) {
             <table class="min-w-full bg-white border border-gray-200 mt-8">
                 <thead>
                     <tr>
-                        <th class="px-4 py-2 border-b">Name</th>
-                        <th class="px-4 py-2 border-b">Description</th>
+                        <th
+                            @click="toggleSort('name')"
+                            class="cursor-pointer px-4 py-2 border-b"
+                        >
+                            Name
+                            <span>
+                                <span v-if="filters.sort === 'name'">
+                                    {{
+                                        filters.direction === "asc" ? "↑" : "↓"
+                                    }}
+                                </span></span
+                            >
+                        </th>
+
+                        <th
+                            @click="toggleSort('description')"
+                            class="cursor-pointer px-4 py-2 border-b"
+                        >
+                            Description
+                            <span>
+                                <span v-if="filters.sort === 'description'">
+                                    {{
+                                        filters.direction === "asc" ? "↑" : "↓"
+                                    }}
+                                </span></span
+                            >
+                        </th>
                         <th class="px-4 py-2 border-b">Created By</th>
+                        <th
+                            @click="toggleSort('status')"
+                            class="cursor-pointer px-4 py-2 border-b"
+                        >
+                            Status
+                            <span>
+                                <span v-if="filters.sort === 'status'">
+                                    {{
+                                        filters.direction === "asc" ? "↑" : "↓"
+                                    }}
+                                </span></span
+                            >
+                        </th>
                         <th class="px-4 py-2 border-b">Status</th>
                         <th class="px-4 py-2 border-b">Action</th>
                     </tr>
@@ -58,14 +116,16 @@ function checkTask(taskId) {
                         <td class="px-4 py-2 border-b">
                             <span
                                 :class="{
-                                    'text-green-600':
+                                    ' bg-green-600 p-2 rounded-full text-sm text-white':
                                         task.status === 'completed',
-                                    'text-yellow-600':
+                                    'bg-yellow-600 p-2 rounded-full text-sm text-white':
                                         task.status === 'pending',
-                                    'text-blue-600':
+                                    'bg-blue-600 p-2 rounded-full text-sm text-white':
                                         task.status === 'inprogress',
-                                    'text-gray-600': task.status === 'checking',
-                                    'text-red-600': task.status === 'failed',
+                                    'bg-gray-600 p-2 rounded-full text-sm text-white':
+                                        task.status === 'checking',
+                                    'bg-red-600 p-2 rounded-full text-sm text-white':
+                                        task.status === 'failed',
                                 }"
                             >
                                 {{

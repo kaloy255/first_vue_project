@@ -16,14 +16,14 @@ class AdminController extends Controller
     $currentUserId = $request->user()->id;
 
     // Sorting
-    $sortField = $request->input('sort', 'name');
-    $sortDirection = $request->input('direction', 'asc');
+    $sortField = $request->input('sort', 'created_at');
+    $sortDirection = $request->input('direction', 'desc');
 
     // Fetch tasks with sorting
     $usersTasks = Tasks::with(['assign_to', 'creator'])
         ->orderBy($sortField, $sortDirection)
         ->paginate(10)
-        ->appends($request->only(['search', 'sort', 'direction'])); 
+        ->appends($request->only(['sort', 'direction'])); 
 
     $users = User::query()
         ->when($searchUser, function ($query, $search) {

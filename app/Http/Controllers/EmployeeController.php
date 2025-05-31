@@ -8,14 +8,24 @@ use Inertia\Inertia;
 
 class EmployeeController extends Controller
 {
-    public function index()
-    {
-        $myTasks = Tasks::with('creator')->where('assign_to', auth()->id())->get();
+   public function index(Request $request)
+{
+    $sort = $request->input('sort', 'created_at'); 
+    $direction = $request->input('direction', 'desc'); 
 
-        return Inertia::render('Dashboard', [
-            'myTasks' => $myTasks,
-        ]);
-    }
+    $myTasks = Tasks::with('creator')
+        ->where('assign_to', auth()->id())
+        ->orderBy($sort, $direction)
+        ->get();
+
+    return Inertia::render('Dashboard', [
+        'myTasks' => $myTasks,
+        'filters' => [
+            'sort' => $sort,
+            'direction' => $direction,
+        ],
+    ]);
+}
 
     public function startTask(Tasks $task)
     {

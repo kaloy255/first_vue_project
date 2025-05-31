@@ -8,6 +8,7 @@ import "vue-multiselect/dist/vue-multiselect.min.css";
 import Pagination from "@/Components/Pagination.vue";
 import { usePage } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
+const page = usePage();
 
 const props = defineProps({
     users: {
@@ -27,7 +28,6 @@ const closeModal = () => {
     selectedUser.value = null;
 };
 
-const page = usePage();
 //get the current page
 const currentPage = ref(page.url.split("page=")[1] || 1);
 //form
@@ -88,6 +88,7 @@ function toggleSort(field) {
         },
         {
             preserveScroll: true,
+            replace: true,
         }
     );
 }
@@ -217,7 +218,7 @@ function toggleSort(field) {
                             class="px-4 py-2 border-b cursor-pointer"
                             @click="toggleSort('name')"
                         >
-                            name
+                            Name
                             <span v-if="filters.sort === 'name'">
                                 {{ filters.direction === "asc" ? "↑" : "↓" }}
                             </span>
