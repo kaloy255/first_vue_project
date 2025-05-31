@@ -10,27 +10,39 @@ use Inertia\Inertia;
 
 class AdminController extends Controller
 {
-    public function index(Request $request){
-        //assign to input
-        $searchUser = $request->input('search');
-        //admin id
-        $currentUserId = $request->user()->id;
+   public function index(Request $request)
+{
+    $searchUser = $request->input('search');
+    $currentUserId = $request->user()->id;
 
-        $usersTasks = Tasks::with(['assignedUser', 'creator'])->paginate(10);
-        $users = User::query()
+    // Sorting
+    $sortField = $request->input('sort', 'name');
+    $sortDirection = $request->input('direction', 'asc');
+
+    // Fetch tasks with sorting
+    $usersTasks = Tasks::with(['assign_to', 'creator'])
+        ->orderBy($sortField, $sortDirection)
+        ->paginate(10)
+        ->appends($request->only(['search', 'sort', 'direction'])); 
+
+    $users = User::query()
         ->when($searchUser, function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%");
-            })
-            ->where('id', '!=', $currentUserId)
-            ->get(['id', 'name', 'email']);
-        
-    
-        return Inertia::render('Admin/Dashboard', [
-            'users' => $users,
-            'usersTasks'=> $usersTasks,
-        ]);
-    }
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+        })
+        ->where('id', '!=', $currentUserId)
+        ->get(['id', 'name', 'email']);
+
+    return Inertia::render('Admin/Dashboard', [
+        'users' => $users,
+        'usersTasks' => $usersTasks,
+        'filters' => [
+            'sort' => $sortField,
+            'direction' => $sortDirection,
+        ]
+    ]);
+}
+
 
     public function store(Request $request){
         

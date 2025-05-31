@@ -35,9 +35,14 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
 
 });
 
-Route::get('/dashboard', [EmployeeController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
-Route::patch('/dashboard/{task}/start', [EmployeeController::class, 'startTask'])->middleware(['auth', 'verified'])->name('tasks.start');
-Route::patch('/dashboard/{task}/check', [EmployeeController::class, 'checkTask'])->middleware(['auth', 'verified'])->name('tasks.check');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/dashboard', [EmployeeController::class, 'index'])->name('dashboard');
+    Route::patch('/dashboard/{task}/start', [EmployeeController::class, 'startTask'])->name('tasks.start');
+    Route::patch('/dashboard/{task}/check', [EmployeeController::class, 'checkTask'])->name('tasks.check');
+
+});
+
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

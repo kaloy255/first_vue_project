@@ -18,7 +18,7 @@ class Tasks extends Model
     ];
 
      // User who is assigned the task
-    public function assignedUser()
+    public function assign_to()
     {
         return $this->belongsTo(User::class, 'assign_to');
     }

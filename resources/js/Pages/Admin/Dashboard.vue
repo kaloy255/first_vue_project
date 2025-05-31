@@ -67,6 +67,30 @@ function doneTask(taskId) {
 function failedTask(taskId) {
     router.patch(route("tasks.failed", taskId));
 }
+
+//asc/desc toggle fieds(name,desription,assignto)
+const filters = page.props.filters;
+console.log(filters);
+
+function toggleSort(field) {
+    const currentSort = filters.sort;
+    const currentDirection = filters.direction;
+    console.log(currentSort);
+    console.log(currentDirection);
+    const newDirection =
+        currentSort === field && currentDirection === "asc" ? "desc" : "asc";
+    console.log(newDirection);
+    router.get(
+        route("admin.dashboard"),
+        {
+            sort: field,
+            direction: newDirection,
+        },
+        {
+            preserveScroll: true,
+        }
+    );
+}
 </script>
 
 <template>
@@ -189,11 +213,45 @@ function failedTask(taskId) {
             <table class="min-w-full bg-white border border-gray-200 mt-8">
                 <thead>
                     <tr>
-                        <th class="px-4 py-2 border-b">Name</th>
-                        <th class="px-4 py-2 border-b">Description</th>
-                        <th class="px-4 py-2 border-b">Assign To</th>
+                        <th
+                            class="px-4 py-2 border-b cursor-pointer"
+                            @click="toggleSort('name')"
+                        >
+                            name
+                            <span v-if="filters.sort === 'name'">
+                                {{ filters.direction === "asc" ? "↑" : "↓" }}
+                            </span>
+                        </th>
+                        <th
+                            class="px-4 py-2 border-b cursor-pointer"
+                            @click="toggleSort('description')"
+                        >
+                            Description
+                            <span v-if="filters.sort === 'description'">
+                                {{ filters.direction === "asc" ? "↑" : "↓" }}
+                            </span>
+                        </th>
+                        <th
+                            class="px-4 py-2 border-b cursor-pointer"
+                            @click="toggleSort('assign_to')"
+                        >
+                            Assign To
+                            <span v-if="filters.sort === 'assign_to'">
+                                {{ filters.direction === "asc" ? "↑" : "↓" }}
+                            </span>
+                        </th>
+
                         <th class="px-4 py-2 border-b">Created By</th>
-                        <th class="px-4 py-2 border-b">Status</th>
+
+                        <th
+                            class="px-4 py-2 border-b cursor-pointer"
+                            @click="toggleSort('status')"
+                        >
+                            Status
+                            <span v-if="filters.sort === 'status'">
+                                {{ filters.direction === "asc" ? "↑" : "↓" }}
+                            </span>
+                        </th>
                         <th class="px-4 py-2 border-b">Action</th>
                     </tr>
                 </thead>
@@ -208,9 +266,9 @@ function failedTask(taskId) {
                             {{ task.description }}
                         </td>
                         <td class="px-4 py-2 border-b">
-                            {{ task.assigned_user?.name || "N/A" }}<br />
+                            {{ task.assign_to?.name || "N/A" }}<br />
                             <span class="text-gray-500 text-sm">{{
-                                task.assigned_user?.email || ""
+                                task.assign_to?.email || ""
                             }}</span>
                         </td>
                         <td class="px-4 py-2 border-b">
