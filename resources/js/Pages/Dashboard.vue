@@ -91,7 +91,6 @@ function toggleSort(column) {
                                 </span></span
                             >
                         </th>
-                        <th class="px-4 py-2 border-b">Status</th>
                         <th class="px-4 py-2 border-b">Action</th>
                     </tr>
                 </thead>
