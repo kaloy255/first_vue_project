@@ -14,9 +14,10 @@ class TaskSeeder extends Seeder
      */
     public function run(): void
     {
+        //tasks seeder
         $assignedUser = User::where('email', 'user@gmail.com')->first();
         $creator = User::where('email', 'admin@gmail.com')->first();
-
+  
          Tasks::create([
             'name' => 'Design Homepage',
             'description' => 'Create a responsive homepage layout.',
