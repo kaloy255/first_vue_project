@@ -21,8 +21,8 @@ class EmployeeController extends Controller
               ->orWhere('description', 'like', "%{$search}%")
         )
         ->orderBy($sort, $direction)
-        ->paginate(5)                // ← paginate instead of get()
-        ->withQueryString();          // ← keep ?search=…&sort=… on links
+        ->paginate(5)                
+        ->withQueryString();          
 
     return Inertia::render('Dashboard', [
         'myTasks' => $myTasks,
