@@ -16,9 +16,12 @@ defineProps({
             v-html="page.label"
             class="mx-1 px-2 py-1 rounded border"
             :class="
-                page.active
+                (page.active
                     ? 'bg-blue-100 border-blue-500 text-blue-600'
-                    : 'bg-white border-gray-300 text-gray-700'
+                    : 'bg-white border-gray-300 text-gray-700',
+                page.url
+                    ? 'hover:bg-blue-50 hover:border-blue-400'
+                    : 'cursor-not-allowed text-gray-400')
             "
             preserve-scroll
         />

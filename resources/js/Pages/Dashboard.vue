@@ -3,9 +3,25 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import { router } from "@inertiajs/vue3";
 import { usePage } from "@inertiajs/vue3";
+import { ref, watch } from "vue";
+import Pagination from "@/Components/Pagination.vue";
 const page = usePage();
-defineProps({
+const props = defineProps({
     myTasks: Object,
+    filters: Object,
+});
+
+const search = ref(props.filters.search || "");
+
+watch(search, (value) => {
+    router.get(
+        route("dashboard"),
+        { search: value },
+        {
+            preserveState: true,
+            replace: true,
+        }
+    );
 });
 
 function startTask(taskId) {
@@ -47,6 +63,12 @@ function toggleSort(column) {
         </template>
 
         <div class="p-12">
+            <input
+                v-model="search"
+                type="text"
+                placeholder="search..."
+                class="mb-4 p-2 border rounded w-full sm:w-1/3 lg:w-1/4"
+            />
             <table class="min-w-full bg-white border border-gray-200 mt-8">
                 <thead>
                     <tr>
@@ -101,7 +123,7 @@ function toggleSort(column) {
                         </td>
                     </tr>
                     <tr
-                        v-for="task in myTasks"
+                        v-for="task in myTasks.data"
                         :key="task.id"
                         class="text-center"
                     >
@@ -160,6 +182,7 @@ function toggleSort(column) {
                         </td>
                     </tr>
                 </tbody>
+                <div><Pagination :links="myTasks.links" class="mt-4" /></div>
             </table>
         </div>
     </AuthenticatedLayout>

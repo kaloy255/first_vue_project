@@ -10,22 +10,26 @@ class EmployeeController extends Controller
 {
    public function index(Request $request)
 {
-    $sort = $request->input('sort', 'created_at'); 
-    $direction = $request->input('direction', 'desc'); 
+    $search    = $request->input('search');
+    $sort      = $request->input('sort', 'created_at');
+    $direction = $request->input('direction', 'desc');
 
     $myTasks = Tasks::with('creator')
         ->where('assign_to', auth()->id())
+        ->when($search, fn($q) =>
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('description', 'like', "%{$search}%")
+        )
         ->orderBy($sort, $direction)
-        ->get();
+        ->paginate(5)                // ← paginate instead of get()
+        ->withQueryString();          // ← keep ?search=…&sort=… on links
 
     return Inertia::render('Dashboard', [
         'myTasks' => $myTasks,
-        'filters' => [
-            'sort' => $sort,
-            'direction' => $direction,
-        ],
+        'filters' => compact('search', 'sort', 'direction'),
     ]);
 }
+
 
     public function startTask(Tasks $task)
     {

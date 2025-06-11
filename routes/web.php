@@ -26,7 +26,7 @@ Route::get('/', function () {
         'phpVersion' => PHP_VERSION,
     ]); 
 });
-
+//admin
 Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class , 'index'])->name('admin.dashboard');
     Route::post('/admin/store', [AdminController::class , 'store'])->name('admin.store');
@@ -34,7 +34,7 @@ Route::middleware(['auth', 'isAdmin'])->group(function () {
     Route::patch('/admin/{task}/failed', [AdminController::class, 'failedTask'])->middleware(['auth', 'verified'])->name('tasks.failed');
 
 });
-
+//user
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [EmployeeController::class, 'index'])->name('dashboard');
     Route::patch('/dashboard/{task}/start', [EmployeeController::class, 'startTask'])->name('tasks.start');
